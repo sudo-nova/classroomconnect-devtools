@@ -25,6 +25,23 @@ function update(){
     read status
     if [ "${status}" == "Y" ]  || [ "${status}" == "y" ];
     then
+        # cd into the deployment directory
+        # all of the replace statements are just to support the 
+        # user being in 1 of 3 directories:
+        # classroom-connect
+        # classroom-connect/developement
+        # classroom-connect/deployment
+        wd=$(pwd)
+        p=classroom-connect/developement
+        p2=classroom-connect/deployment
+        rep=classroom-connect/deployment
+        td="${wd/$p/$rep}"
+        td="${td/$p2/$rep}"
+        if [[ $td != *"classroom-connect/deployment"* ]]; then
+          td="${td/classroom-connect/$rep}"
+        fi
+        echo $td
+        cd "${td}"
         # the easier, safer way of git pulling.
         # It's harder to accidentally push to origin when this method
         # is used.
@@ -35,6 +52,7 @@ function update(){
             git rm .gitignore
         fi
         # move files over from dev
+        pwd
         cp ../../developement/classroom-connect/client_secret.json .
         cp ../../developement/classroom-connect/firebase_secret.json .
         cp ../../developement/classroom-connect/django_secret.json .
@@ -71,12 +89,21 @@ function update(){
     printf "${GREEN}Finished.${NC}\n"
 }
 function install(){
-    printf "Path to firebase_secret.json:"
+    printf "Path to firebase_secret.json [./firebase_secret.json]:"
     read firebase
-    printf "Path to client_secret.json:"
+    if [ "${firebase}" == "" ]; then
+    firebase="./firebase_secret.json"
+    fi
+    printf "Path to client_secret.json [./client_secret.json]:"
     read client
-    printf "Path to django_secret.json:"
+    if [ "${client}" == "" ]; then
+    client="./client_secret.json"
+    fi
+    printf "Path to django_secret.json [./django_secret.json]:"
     read django
+    if [ "${django}" == "" ]; then
+    django="./django_secret.json"
+    fi
     mkdir classroom-connect
     cd classroom-connect
     mkdir developement
@@ -86,7 +113,7 @@ function install(){
     cd ..
     cd deployment
     git clone https://github.com/CalderWhite/classroom-connect.git
-    echo "Copying sensitive files into repositories."
+    echo "Copying sensitive files into developement repository..."
     cd ../..
     cp "${firebase}" classroom-connect/developement/classroom-connect
     cp "${client}" classroom-connect/developement/classroom-connect
