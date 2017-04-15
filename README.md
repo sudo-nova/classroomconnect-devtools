@@ -8,4 +8,6 @@ wget https://raw.githubusercontent.com/sudo-nova/classroomconnect-devtools/maste
 # only rw, since we don't want any 3rd party sources changing this script.
 chmod ug=rx cc-tools.sh
 ./cc-tools.sh install
+cd classroom-connect/developement
+sudo pip3 install -r requirements.txt
 ```
