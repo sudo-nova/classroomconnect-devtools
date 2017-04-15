@@ -20,10 +20,10 @@ function update(){
     NC='\033[0m' # No Color
     
     # delete current repo
-    printf "${YELLOW}Warning! This will delete your current repositor and save no changes.\n"
+    printf "${YELLOW}Warning! This will delete your current repository and save no changes.\n"
     printf "Proceed? (Y/N):${NC}"
     read status
-    if ["$status" == "Y"] || ["$status" == "y"];
+    if [ "${status}" == "Y" ]  || [ "${status}" == "y" ];
     then
         # the easier, safer way of git pulling.
         # It's harder to accidentally push to origin when this method
@@ -63,7 +63,7 @@ function update(){
         # assumes heroku is already logged in...
         #heroku login
         heroku git:remote -a classroomconnect
-        if [ $1 == true ]; then
+        if [ "${1}" == "true" ]; then
             printf "${GREEN}Pushing to heroku...${NC}"
             git push heroku master --force
         fi
@@ -87,10 +87,10 @@ function install(){
     cd deployment
     git clone https://github.com/CalderWhite/classroom-connect.git
     echo "Copying sensitive files into repositories."
-    cd ..
-    cp "${firebase}" developement/classroom-connect
-    cp "${client}" developement/classroom-connect
-    cp "${django}" developement/classroom-connect
+    cd ../..
+    cp "${firebase}" classroom-connect/developement/classroom-connect
+    cp "${client}" classroom-connect/developement/classroom-connect
+    cp "${django}" classroom-connect/developement/classroom-connect
 }
 
 while [[ $# -gt 0 ]]
@@ -98,15 +98,15 @@ do
 key="$1"
 case $key in
     install)
-    echo "install"
         install
+        exit 0
     shift # past argument
     ;;
     update)
     if test $# -gt 1; then
         if [ "${3}" == "--nopush" ] || [ "${3}" == "-n" ]; then
             cd "${2}"
-            update true
+            update false
         elif [ "${2}" == "--help" ] || [ "${2}" == "-h" ]; then
             echo "Usage:"
             echo "  cc-tools update <deploy dir> <flags>"
@@ -115,8 +115,9 @@ case $key in
             echo "and pushes to heroku."
         else
             cd "${2}"
-            update false
+            update true
         fi
+            exit 0
     else
         echo "No deployment directory specified."
         echo "Usage"
